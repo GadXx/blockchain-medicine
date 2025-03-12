@@ -1,0 +1,13 @@
+IPFS
+
+docker run -d --name ipfs_host \
+  -v ipfs_data:/data/ipfs \
+  -p 4001:4001 \
+  -p 5001:5001 \
+  -p 8080:8080 \
+  ipfs/kubo:latest
+
+
+MONGO
+
+docker run --name mongodb -d -p 27017:27017 mongo

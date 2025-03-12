@@ -154,7 +154,7 @@ router.post('/verify', async (req, res) => {
     res.status(500).json({ success: false, message: "Ошибка сервера" });
   }
 });
-
+ 
 // 📌 Регистрация кошелька и привязка его к пользователю
 router.post('/register-wallet', async (req, res) => {
   try {
