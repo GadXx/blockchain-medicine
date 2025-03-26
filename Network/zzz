@@ -56,6 +56,7 @@ besu \
   --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303
 
 docker run --name mongodb -d -p 27017:27017 mongo
+docker run -d --name redis -p 6379:6379 redis:latest
 
 npx hardhat clean
 
@@ -65,3 +66,44 @@ npx hardhat run scripts/deploy.js --network customNetwork
 
 
 
+  │  ~/Projects/blockchain-medicine/Network │   main !41 ?70  tree -L 4                                                                                                                 ✔ │ 12:18:32   
+.
+├── artifacts
+│   ├── build-info
+│   │   └── c225ca4257e95633e9e7752413e92896.json
+│   └── contracts
+│       ├── Clinic.sol
+│       │   ├── Clinic.dbg.json
+│       │   └── Clinic.json
+│       ├── ContractFactory.sol
+│       │   ├── ContractFactory.dbg.json
+│       │   └── ContractFactory.json
+│       ├── DIDRegistry.sol
+│       │   ├── DIDRegistry.dbg.json
+│       │   └── DIDRegistry.json
+│       ├── IClinic.sol
+│       │   ├── IClinic.dbg.json
+│       │   └── IClinic.json
+│       ├── IDIDRegistry.sol
+│       │   ├── IDIDRegistry.dbg.json
+│       │   └── IDIDRegistry.json
+│       └── MedicalCard.sol
+│           ├── MedicalCard.dbg.json
+│           └── MedicalCard.json
+├── cache
+│   └── solidity-files-cache.json
+├── contracts
+│   ├── Clinic.sol
+│   ├── ContractFactory.sol
+│   ├── DIDRegistry.sol
+│   ├── IClinic.sol
+│   ├── IDIDRegistry.sol
+│   └── MedicalCard.sol
+├── genesis.json
+├── hardhat.config.js
+├── ibftConfigFile.json
+├── package.json
+├── package-lock.json
+├── scripts
+│   ├── deploy.js
+│   └── deploy_medical_card.js
