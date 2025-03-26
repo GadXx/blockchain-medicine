@@ -3,5 +3,8 @@
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "ethers": "^5.7.2",
     "hardhat": "^2.22.19"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0"
   }
 }
