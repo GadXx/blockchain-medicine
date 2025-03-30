@@ -1,14 +1,25 @@
 const { ethers } = require("hardhat");
 
 async function main() {
+
+    // Получение фабрики контракта
+    const DIDRegistry = await ethers.getContractFactory("DIDRegistry");
+
+    // Деплой контракта
+    const DIDRegistryContract = await DIDRegistry.deploy();
+  
+    await DIDRegistryContract.deployed();
+    console.log("DIDRegistry Deployed to:", DIDRegistryContract.address);
+
+
   // Получение фабрики контракта
   const ContractFactory = await ethers.getContractFactory("ContractFactory");
 
   // Деплой контракта
-  const contract = await ContractFactory.deploy("0x00d2bC965Fe2847b2af611F7595caD24A1255533");
+  const ContractFactoryContract = await ContractFactory.deploy(DIDRegistryContract.address);
 
-  await contract.deployed();
-  console.log("Deployed to:", contract.address);
+  await ContractFactoryContract.deployed();
+  console.log("ContractFactory Deployed to:", ContractFactoryContract.address);
 }
 
 main()

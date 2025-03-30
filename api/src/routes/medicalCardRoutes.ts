@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Request, Response } from "express";
 import { MedicalCardController } from "../controllers/medicalCardController";
 
-import { authMiddleware } from '../authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 router.use(authMiddleware);

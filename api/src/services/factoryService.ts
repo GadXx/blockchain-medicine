@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import dotenv from "dotenv";
 import { DidService } from "./didService";
 import { redis } from "../config/Redis";
+import { Clinic } from "../models/Clinic";
 
 dotenv.config();
 
@@ -11,7 +12,8 @@ const factoryABI = [
   "function deployClinic() external returns (address)",
   "function addClinicDeployer(address deployer) external",
   "function removeClinicDeployer(address deployer) external",
-  "function deployedMedicalCards(address) external view returns (address)"
+  "function deployedMedicalCards(address) external view returns (address)",
+  "function deployedClinics(address) external view returns (address)"
 ];
 
 const factoryContract = new ethers.Contract(
@@ -28,6 +30,7 @@ export class FactoryService {
   }
 
   public async createDeployMedicalCardTx(userID: string) {
+
     const didDocument = await this.didService.getDIDDocument(userID);
     if (!didDocument) throw new Error("DID document not found");
 
@@ -51,42 +54,99 @@ export class FactoryService {
     return tx;
   }
 
-  public async createDeployClinicTx(userAddress: string) {
+  public async createDeployClinicTx(clinicID: string) {
+    const clinic = await Clinic.findOne({ _id: clinicID });
+    if(!clinic) {
+      throw new Error('Clinic not found');
+    }
+    if(clinic.verified == false) {
+      throw new Error('Clinic not verified');
+    }
+    if(!clinic.address) {
+      throw new Error('Wallet address already saved');
+    }
+    if(clinic.contract_address) {
+      throw new Error('Contract address already saved');
+    }
+
     const iface = new ethers.Interface(factoryABI);
     const data = iface.encodeFunctionData("deployClinic");
 
     const tx = {
       to: process.env.FACTORY_CONTRACT_ADDRESS,
       data,
-      from: userAddress
+      from: clinic.address,
+      chainId: 1337,
+      gasLimit: ethers.toQuantity(5000000n),
+      gasPrice: ethers.toQuantity(0n),
+      maxFeePerGas: ethers.toQuantity(0n),
+      maxPriorityFeePerGas: ethers.toQuantity(0n),
+      nonce: await provider.getTransactionCount(clinic.address, "latest")
     };
 
+    await redis.set(`tx:${clinicID}`, JSON.stringify(tx), "EX", 3600);
+    
     return tx;
   }
 
-  public async addClinicDeployerTx(userAddress: string, deployerAddress: string) {
+  public async addClinicDeployerTx(userID: string, clinicID: string) {
+
+    const clinic = await Clinic.findOne({ _id: clinicID });
+    if(!clinic) {
+      throw new Error('Clinic not verified');
+    }
+    if(!clinic.address) {
+      throw new Error('Wallet address already saved');
+    }
+
     const iface = new ethers.Interface(factoryABI);
-    const data = iface.encodeFunctionData("addClinicDeployer", [deployerAddress]);
+    const data = iface.encodeFunctionData("addClinicDeployer", [clinic.address]);
 
     const tx = {
       to: process.env.FACTORY_CONTRACT_ADDRESS,
       data,
-      from: userAddress
+      from: process.env.ADMIN_ADDRESS,
+      chainId: 1337,
+      gasLimit: ethers.toQuantity(5000000n),
+      gasPrice: ethers.toQuantity(0n),
+      maxFeePerGas: ethers.toQuantity(0n),
+      maxPriorityFeePerGas: ethers.toQuantity(0n),
+      nonce: await provider.getTransactionCount(process.env.ADMIN_ADDRESS!, "latest")
     };
 
+    await redis.set(`tx:${userID}`, JSON.stringify(tx), "EX", 3600);
     return tx;
   }
 
-  public async removeClinicDeployerTx(userAddress: string, deployerAddress: string) {
+  public async removeClinicDeployerTx(userID: string, clinicID: string) {
+
+    const clinic = await Clinic.findOne({ _id: clinicID });
+    if(!clinic) {
+      throw new Error('Clinic not found');
+    }
+    if(!clinic.verified) {
+      throw new Error('Clinic not verified');
+    }
+    if(!clinic.address) {
+      throw new Error('Wallet address already saved');
+    }
+
     const iface = new ethers.Interface(factoryABI);
-    const data = iface.encodeFunctionData("removeClinicDeployer", [deployerAddress]);
+    const data = iface.encodeFunctionData("removeClinicDeployer", [clinic.address]);
 
     const tx = {
       to: process.env.FACTORY_CONTRACT_ADDRESS,
       data,
-      from: userAddress
+      from: process.env.ADMIN_ADDRESS,
+      chainId: 1337,
+      gasLimit: ethers.toQuantity(5000000n),
+      gasPrice: ethers.toQuantity(0n),
+      maxFeePerGas: ethers.toQuantity(0n),
+      maxPriorityFeePerGas: ethers.toQuantity(0n),
+      nonce: await provider.getTransactionCount(clinic.address, "latest")
     };
 
+    await redis.set(`tx:${userID}`, JSON.stringify(tx), "EX", 3600);
     return tx;
   }
 
@@ -98,8 +158,8 @@ export class FactoryService {
     return await factoryContract.deployedClinics(userAddress);
   }
 
-
   public async saveContractAddress(userID: string): Promise<void> {
+
     const didDocument = await this.didService.getDIDDocument(userID);
     if (!didDocument) {
         throw new Error('DID document not found');
@@ -107,11 +167,36 @@ export class FactoryService {
     if (didDocument.contract_address) {
         throw new Error('Contract address already saved');
     }
+    
     const contractAddress = await this.getDeployedMedicalCard(didDocument.authentication.address);
     didDocument.contract_address = contractAddress;
+    console.log(contractAddress);
+    
     await didDocument.save();
-    return;
-}
+    return contractAddress;
+  }
+
+  public async saveContractAddressClinic(clinicID: string): Promise<void> {
+    const clinic = await Clinic.findOne({ _id: clinicID });
+    if(!clinic) {
+      throw new Error('Clinic not found');
+    }
+    if(!clinic.address) {
+      throw new Error('Wallet address already saved');
+    }
+    if(clinic.contract_address) {
+      throw new Error('Contract address already saved');
+    }
+
+    console.log(clinic);
+    
+    const contractAddress = await this.getDeployedClinic(clinic.address);
+    console.log(contractAddress);
+    
+    clinic.contract_address = contractAddress;
+    await clinic.save();
+    return contractAddress;
+  }
 }
 
 export default new FactoryService();

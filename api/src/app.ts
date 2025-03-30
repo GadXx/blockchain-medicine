@@ -4,6 +4,9 @@ import authRoutes from './routes/authRoutes';
 import didRouter from './routes/didRoutes';
 import factoryRouter from './routes/factoryRoutes';
 import medicalCardRouter from './routes/medicalCardRoutes';
+import adminRouter from './routes/adminRoutes';
+import doctorRouter from './routes/doctorRoutes';
+import clinicRouter from './routes/clinicRoutes';
 import transactionRouter from './routes/transactionRoutes';
 import { connectToMongoDB } from './config/dbMongo';
 
@@ -19,6 +22,9 @@ app.use('/factory', factoryRouter);
 app.use('/medical-card', medicalCardRouter);
 app.use('/transaction', transactionRouter);
 
+app.use('/admin', adminRouter);
+app.use('/doctor', doctorRouter);
+app.use('/clinic', clinicRouter);
 
 connectToMongoDB().then(() => {
   app.listen(port, () => {

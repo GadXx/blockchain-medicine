@@ -37,6 +37,11 @@ const testAPI = async () => {
     // Set Authorization header for subsequent requests
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
+    // Verify Token
+    console.log("⏳ Verifying user...");
+    response = await axios.put(`${API_URL}/auth/verify`);
+    console.log("✅ Token verified:", response.data);
+
     // Generate Mnemonic
     const mnemonic = generateMnemonic();
     console.log("✅ Mnemonic generated:", mnemonic);
@@ -47,7 +52,8 @@ const testAPI = async () => {
     // Register DID
     console.log("⏳ Registering DID...");
     response = await axios.post(`${API_URL}/did/register-did`, {
-      encryptedMnemonic: mnemonic
+      walletAddress: wallet.address,
+      walletPublicKey: wallet.publicKey
     });
     console.log("✅ DID registered:", response.data);
 
@@ -55,13 +61,17 @@ const testAPI = async () => {
     console.log("⏳ Getting DID document...");
     response = await axios.get(`${API_URL}/did/get-did-document`);
     console.log("✅ DID document received:", response.data);
+    const patient_did = response.data.didDocument;
 
+    
     // Register DID in Blockchain
     console.log("⏳ Registering DID in blockchain...");
-    response = await axios.post(`${API_URL}/did/register-did-in-blockchain`);
+    response = await axios.post(`${API_URL}/did/register-did-in-blockchain`, {
+      DID: patient_did.did,
+      walletAddress: wallet.address,
+    });
 
-    const WW = new ethers.Wallet(wallet.privateKey);
-    let signedTx = await WW.signTransaction(response.data.unsignedTransaction);
+    let signedTx = await wallet.signTransaction(response.data.unsignedTransaction);
 
     // Send Signed Transaction
     console.log("⏳ Sending signed transaction...");
@@ -75,7 +85,7 @@ const testAPI = async () => {
     response = await axios.post(`${API_URL}/factory/deploy-medical-card`);
     console.log("✅ Medical card deployment transaction:", response.data);
     
-    signedTx = await WW.signTransaction(response.data.unsignedTransaction);
+    signedTx = await wallet.signTransaction(response.data.unsignedTransaction);
 
     // // Send Signed Transaction
     console.log("⏳ Sending signed transaction...");
@@ -96,12 +106,12 @@ const testAPI = async () => {
 
 
     const message = "Access Medical Records";
-    const signature = await WW.signMessage(message);
+    const signature = await wallet.signMessage(message);
 
     // // Get Medical Card
     console.log("⏳ Getting medical card...");
     response = await axios.post(`${API_URL}/medical-card/get-medical-records`, {
-            signature
+      signature
     });
     console.log("✅ Medical card:", response.data);
 

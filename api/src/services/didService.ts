@@ -1,6 +1,5 @@
-import { IDIDDocument, DidDocument } from "../models/DidDocuments";
-import { generateWallet } from "../utils/wallet";   
-import { generateDID, verifyDID } from "../utils/did";
+import { IDIDDocument, DidDocument } from "../models/DidDocuments"; 
+import { generateDID } from "../utils/did";
 import { User, IUser } from '../models/User';
 import { ethers } from "ethers";
 import { redis } from "../config/Redis";
@@ -16,24 +15,18 @@ const DIDRegistryABI = [
 
 export class DidService {
 
-    public async registerDID(userID: string, mnemonic: string): Promise<string> {
+    public async registerDID(userID: string, walletAddress: string, walletPublicKey: string): Promise<string> {
 
         const user = await User.findById(userID) as IUser;
-        if (!user) {
-            throw new Error('User not found');
-        }
-        if (user.did) {
-            throw new Error('DID already registered');
-        }
+        if (user.did) throw new Error('DID already registered');
         
         const userDID = generateDID();
-        const wallet = generateWallet(mnemonic);
         const didDocumentData = {
             did: userDID,            
             authentication: { 
                 type: 'EcdsaSecp256',
-                address: wallet.address,
-                publicKey: wallet.publicKey
+                address: walletAddress,
+                publicKey: walletPublicKey
             }
         };
 
@@ -47,49 +40,42 @@ export class DidService {
     
     public async getDID(userID: string): Promise<String> {        
         const user = await User.findById(userID) as IUser;
-        if (!user) {
-            throw new Error('User not found');
-        }
-        if (!user.did) {
-            throw new Error('DID not found');
-        }
+
+        if (!user) throw new Error('User not found')
+        if (!user.did) throw new Error('DID not found');
+
         return user.did;
     }
 
     public async getDIDDocument(userID: string): Promise<IDIDDocument> {
         const userDID = await this.getDID(userID);
-        if (!userDID) {
-            throw new Error('User not found');
-        }
+        if (!userDID) throw new Error('User not found');
+
         const didDocument = await DidDocument.findOne({ did: userDID });
-        if (!didDocument) {
-            throw new Error('DID document not found');
-        }
+        if (!didDocument) throw new Error('DID document not found');
+
         return didDocument;
     }
 
 
-    public async registerDIDinBlockchainTx(userID: string) {
-        const didDocument = await this.getDIDDocument(userID);
-        if (!didDocument) {
-            throw new Error('DID document not found');
-        }
+    public async registerDIDinBlockchainTx(userId: string, DID: string, walletAddress: string) {
+
         const iface = new ethers.Interface(DIDRegistryABI);
-        const data = iface.encodeFunctionData("registerDID", [didDocument.did]);
+        const data = iface.encodeFunctionData("registerDID", [DID]);
 
         const tx = {
             to: process.env.DID_REGISTRY_ADDRESS,
             data,
-            from: didDocument.authentication.address,
+            from: walletAddress,
             chainId: 1337,
             gasLimit: ethers.toQuantity(5000000n),
             gasPrice: ethers.toQuantity(0n),
             maxFeePerGas: ethers.toQuantity(0n),
             maxPriorityFeePerGas: ethers.toQuantity(0n),
-            nonce: await provider.getTransactionCount(didDocument.authentication.address, "latest")
+            nonce: await provider.getTransactionCount(walletAddress, "latest")
         };
 
-        await redis.set(`tx:${userID}`, JSON.stringify(tx), "EX", 3600);
+        await redis.set(`tx:${userId}`, JSON.stringify(tx), "EX", 3600);
 
         return tx;
     }

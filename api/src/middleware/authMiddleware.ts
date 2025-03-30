@@ -22,6 +22,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+
     req.userId = decoded.id; // Сохраняем userId в объект запроса
     next();
   } catch (error) {

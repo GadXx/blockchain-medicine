@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { MedicalCardService } from "../services/medicalCardService";
+import { isAdmin, isClinic, isDoctor, isPatient, isVerifiedPatient } from "../middleware/authDecorators";
 
 export class MedicalCardController {
     private medicalCardService: MedicalCardService;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
+import { isPatient } from '../middleware/authDecorators';
 
 export class AuthController {
   private authService: AuthService;
@@ -26,7 +27,7 @@ export class AuthController {
     try {
       const { identifier, password } = req.body;
       const result = await this.authService.loginUser(identifier, password);
-      if (result) {
+      if (result) {       
         res.status(200).json({ token: result });
       } else {
         res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -36,6 +37,7 @@ export class AuthController {
     }
   }
 
+  @isPatient
   public async verifycationUser(req: Request, res: Response): Promise<void> {
     try {
       const result = await this.authService.verifycationUser(req.userId!);

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Request, Response } from "express";
 import { TransactionController } from "../controllers/transactionController";
 
-import { authMiddleware } from '../authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 router.use(authMiddleware);

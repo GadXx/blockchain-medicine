@@ -79,10 +79,8 @@ contract MedicalCard {
     }
 
     function isDoctorAuthorized() internal view returns (bool) {
-        string memory doctorDID = didRegistry.resolveAddress(msg.sender);
-
         for (uint256 i = 0; i < clinicList.length; i++) {
-            if (IClinic(authorizedClinics[clinicList[i]]).isDoctorRegistered(doctorDID)) {
+            if (IClinic(authorizedClinics[clinicList[i]]).isDoctorRegistered(msg.sender)) {
                 return true;
             }
         }

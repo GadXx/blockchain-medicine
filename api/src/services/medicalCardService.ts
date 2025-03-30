@@ -18,6 +18,7 @@ export class MedicalCardService {
   }
 
   public async grantAccessTx(userID: string, clinicAddress: string, clinicContractAddress: string) {
+
     const DIDDocument = await this.didService.getDIDDocument(userID);
 
     const iface = new ethers.Interface(medicalCardABI);
@@ -33,6 +34,7 @@ export class MedicalCardService {
   }
 
   public async revokeAccessTx(userID: string, clinicAddress: string) {
+
     const DIDDocument = (await this.didService.getDIDDocument(userID));
 
     const iface = new ethers.Interface(medicalCardABI);
@@ -49,6 +51,7 @@ export class MedicalCardService {
   }
 
   public async addMedicalRecordTx(userID: string, ipfsHash: string) {
+
     const DIDDocument = await this.didService.getDIDDocument(userID);
 
     const iface = new ethers.Interface(medicalCardABI);
@@ -65,15 +68,11 @@ export class MedicalCardService {
   } 
 
   public async getMedicalRecordsTx(userID: string, signature: string) {
+
     const DIDDocument = await this.didService.getDIDDocument(userID);
 
     const message = "Access Medical Records";
     const recoveredAddress = ethers.verifyMessage(message, signature);
-
-    // Проверяем, что этот адрес действительно владеет медицинской картой
-    if (recoveredAddress !== DIDDocument.authentication.address) {
-        throw new Error("Unauthorized: Invalid signature");
-    }
 
     const iface = new ethers.Interface(medicalCardABI);
     const data = iface.encodeFunctionData("getMedicalRecords");
@@ -85,7 +84,7 @@ export class MedicalCardService {
     });
     
     const decode = iface.decodeFunctionResult("getMedicalRecords", result);
-    console.log(decode);
+    
     return decode;
   }
 
