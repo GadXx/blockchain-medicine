@@ -11,7 +11,7 @@ export class AuthService {
     return user;
   }
 
-  public async loginUser(identifier: string, password: string): Promise<string> {
+  public async loginUser(identifier: string, password: string): Promise<{ token: string }> {
     const user = await User.findOne({ $or: [{ email: identifier }, { phone: identifier }] }) as IUser | null;
     if (!user) throw new Error('User not found');
 
@@ -19,16 +19,20 @@ export class AuthService {
     if (!isMatch) throw new Error('Invalid password');
 
     const token = generateToken(user._id.toString());
-    return token;
+    return { token: token };
   }
 
-  public async verifycationUser(userId: string): Promise<IUser> {
-    const user = await User.findById(userId) as IUser;
+  public async verifycationUser(userID: string): Promise<IUser> {
+    const user = await User.findById(userID) as IUser;
     if (!user) throw new Error('User not found');
     // Логика верификации пользователя
     user.verified = true;
     await user.save();
     return user;
+  }
+  
+  public async getAllUsers(): Promise<IUser[]> {
+    return await User.find();
   }
 }
 

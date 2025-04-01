@@ -58,7 +58,7 @@ export class DidService {
     }
 
 
-    public async registerDIDinBlockchainTx(userId: string, DID: string, walletAddress: string) {
+    public async registerDIDinBlockchainTx(userID: string, DID: string, walletAddress: string) {
 
         const iface = new ethers.Interface(DIDRegistryABI);
         const data = iface.encodeFunctionData("registerDID", [DID]);
@@ -75,7 +75,7 @@ export class DidService {
             nonce: await provider.getTransactionCount(walletAddress, "latest")
         };
 
-        await redis.set(`tx:${userId}`, JSON.stringify(tx), "EX", 3600);
+        await redis.set(`tx:${userID}`, JSON.stringify(tx), "EX", 3600);
 
         return tx;
     }

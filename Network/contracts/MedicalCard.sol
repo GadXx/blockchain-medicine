@@ -7,7 +7,7 @@ import "./IClinic.sol";
 contract MedicalCard {
     struct MedicalRecord {
         string ipfsHash;
-        string addedByDID;
+        address addedDoctor;
         uint256 timestamp;
     }
 
@@ -69,13 +69,15 @@ contract MedicalCard {
 
     function addMedicalRecord(string memory ipfsHash) external onlyClinic {
         require(bytes(ipfsHash).length > 0, "Invalid IPFS hash");
-
-        string memory did = didRegistry.resolveAddress(msg.sender);
-        records.push(MedicalRecord(ipfsHash, did, block.timestamp));
+        records.push(MedicalRecord(ipfsHash, msg.sender, block.timestamp));
     }
 
     function getMedicalRecords() external view onlyAuthorized returns (MedicalRecord[] memory) {
         return records;
+    }
+
+    function getAuthorizedClinic(address clinic) external view returns (address) {
+        return authorizedClinics[clinic];
     }
 
     function isDoctorAuthorized() internal view returns (bool) {

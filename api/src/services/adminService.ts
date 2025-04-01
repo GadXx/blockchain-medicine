@@ -1,8 +1,5 @@
 import { generateToken } from '../utils/jwt';
 import dotenv from 'dotenv';
-import { User, IUser } from '../models/User';
-import { Doctor, IDoctor, Clinic, IClinic } from '../models/Clinic';
-
 
 dotenv.config();
 
@@ -18,17 +15,7 @@ export class AdminService {
         return token;
     }
 
-    public async getAllUsers(): Promise<IUser[]> {
-        return await User.find();
-    }
 
-    public async getAllDoctors(): Promise<IDoctor[]> {
-        return await Doctor.find();
-    }
-
-    public async getAllClinics(): Promise<IClinic[]> {
-        return await Clinic.find();
-    }
 }
 
 export default new AdminService();

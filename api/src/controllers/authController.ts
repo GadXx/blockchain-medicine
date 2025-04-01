@@ -28,7 +28,7 @@ export class AuthController {
       const { identifier, password } = req.body;
       const result = await this.authService.loginUser(identifier, password);
       if (result) {       
-        res.status(200).json({ token: result });
+        res.status(200).json(result);
       } else {
         res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
@@ -46,4 +46,5 @@ export class AuthController {
       res.status(500).json({ success: false, message: error.message });
     }
   }
+
 }

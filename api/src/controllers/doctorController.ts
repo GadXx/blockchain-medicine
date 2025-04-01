@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { DoctorService } from "../services/doctorService";
-import { isVerifiedClinic } from "../middleware/authDecorators";
+import { isVerifiedClinic, isDoctor } from "../middleware/authDecorators";
 
 export class DoctorController {
 
@@ -33,16 +33,7 @@ export class DoctorController {
         }   
     }
 
-    public async getDoctor(req: Request, res: Response): Promise<void> {
-        try {
-            const result = await this.doctorService.getDoctor(req.userId!);
-            res.status(200).json(result);
-        }
-        catch (error: any) {
-            res.status(500).json({ success: false, message: error.message });
-        }
-    }
-
+    @isDoctor
     public async registerWallet(req: Request, res: Response): Promise<void> {
         try {
             const { walletAddress, walletPublicKey } = req.body;

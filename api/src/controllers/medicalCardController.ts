@@ -8,6 +8,7 @@ export class MedicalCardController {
         this.medicalCardService = new MedicalCardService();
     }   
 
+    @isVerifiedPatient
     public async grantAccessTx(req: Request, res: Response) {
         try {
             const tx = await this.medicalCardService.grantAccessTx(req.userId!, req.body.clinicAddress, req.body.clinicContractAddress);
@@ -17,6 +18,16 @@ export class MedicalCardController {
         }
     }
 
+    public async checkAccessTx(req: Request, res: Response) {
+        try {
+            await this.medicalCardService.checkAccessTx(req.userId!, req.body.clinicAddress, req.body.clinicContractAddress, req.body.doctorAddress);
+            res.json({ success: true });
+        } catch (error: any) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
+    @isVerifiedPatient
     public async revokeAccessTx(req: Request, res: Response) {
         try {
             const tx = await this.medicalCardService.revokeAccessTx(req.userId!, req.body.clinicAddress);
@@ -26,20 +37,22 @@ export class MedicalCardController {
         }   
     }
 
+    @isDoctor
     public async addMedicalRecordTx(req: Request, res: Response) {
         try {
-            const tx = await this.medicalCardService.addMedicalRecordTx(req.userId!, req.body.ipfsHash);
+            const tx = await this.medicalCardService.addMedicalRecordTx(req.userId!, req.body.userID, req.body.ipfsHash);
             res.json({ unsignedTransaction: tx });
         } catch (error: any) {
             res.status(500).json({ success: false, message: error.message });
         }
     }
 
+    
     public async getMedicalRecordsTx(req: Request, res: Response) {
         try {
-            const { signature } = req.body;
-            const tx = await this.medicalCardService.getMedicalRecordsTx(req.userId!, signature);
-            res.json({ unsignedTransaction: tx });
+            const { userId, signature } = req.body;
+            const result = await this.medicalCardService.getMedicalRecordsTx(userId, signature);
+            res.json({ result });
         } catch (error: any) {
             res.status(500).json({ success: false, message: error.message });
         }

@@ -39,10 +39,10 @@ contract ContractFactory {
         return address(newMedicalCard);
     }
 
-    function deployClinic() external returns (address) {
+    function deployClinic(address clinicOwner) external returns (address) {
         require(allowedClinicDeployers[msg.sender], "Not allowed to deploy clinics");
 
-        Clinic newClinic = new Clinic(address(didRegistry));
+        Clinic newClinic = new Clinic(address(didRegistry), clinicOwner);
         deployedClinics[msg.sender] = address(newClinic);
 
         emit ClinicDeployed(msg.sender, address(newClinic));

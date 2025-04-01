@@ -14,8 +14,8 @@ contract Clinic is IClinic {
         _;
     }
 
-    constructor(address _didRegistry) {
-        owner = msg.sender;
+    constructor(address _didRegistry, address _owner) {
+        owner = _owner;
         didRegistry = IDIDRegistry(_didRegistry);
     }
 

@@ -21,7 +21,6 @@ export class DidController {
         }
     }
 
-    @isVerifiedPatient
     public async getDIDDocument(req: Request, res: Response): Promise<void> {
         try {
             const result = await this.didService.getDIDDocument(req.userId!);
@@ -32,7 +31,7 @@ export class DidController {
         }
     }
 
-    @isVerifPatientORClinic
+    @isVerifiedPatient
     public async registerDIDinBlockchainTx(req: Request, res: Response): Promise<void> {
         try {
             const { DID, walletAddress } = req.body;

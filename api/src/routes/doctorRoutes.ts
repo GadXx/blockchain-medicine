@@ -9,7 +9,6 @@ router.use(authMiddleware);
 
 router.post('/register', (req, res) => doctorController.registerDoctor(req, res));
 router.post('/login', (req, res) => doctorController.loginDoctor(req, res));
-router.get('/get-doctor', (req, res) => doctorController.getDoctor(req, res));
 router.post('/register-wallet', (req, res) => doctorController.registerWallet(req, res));
 
 export default router;

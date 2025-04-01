@@ -116,6 +116,8 @@ const testAPI = async () => {
     console.log("✅ Medical card:", response.data);
 
 
+
+
     } catch (error: any) {
         console.error("❌ Error:", error.response?.data || error.message);
     }

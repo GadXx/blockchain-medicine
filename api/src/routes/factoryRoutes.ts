@@ -11,7 +11,7 @@ router.post("/deploy-medical-card", (req, res) => factoryController.createDeploy
 router.post("/deploy-clinic", (req, res) => factoryController.createDeployClinicTx(req, res));
 router.post("/add-clinic-deployer", (req, res) => factoryController.addClinicDeployerTx(req, res));
 router.post("/remove-clinic-deployer", (req, res) => factoryController.removeClinicDeployerTx(req, res));
-router.post("/save-contract-address", (req, res) => factoryController.saveContractAddress(req, res));
+router.post("/save-contract-address-patient", (req, res) => factoryController.saveContractAddressPatient(req, res));
 router.post("/save-contract-address-clinic", (req, res) => factoryController.saveContractAddressClinic(req, res));
 
 export default router;

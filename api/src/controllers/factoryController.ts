@@ -67,19 +67,21 @@ export class FactoryController {
     }
   }
 
-  public async saveContractAddress(req: Request, res: Response): Promise<void> {
+  @isVerifiedPatient
+  public async saveContractAddressPatient(req: Request, res: Response): Promise<void> {
     try {
-        await this.factoryService.saveContractAddress(req.userId!);
+        await this.factoryService.saveContractAddressPatient(req.userId!);
         res.status(200).json({ success: true, message: "Contract address saved successfully" });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
     }
   }
 
+  @isVerifiedClinic
   public async saveContractAddressClinic(req: Request, res: Response): Promise<void> {
     try {
         const result = await this.factoryService.saveContractAddressClinic(req.userId!);
-        res.status(200).json({ success: true, message: "Contract address saved successfully" });
+        res.status(200).json({ success: true, contract_address: result });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
     }

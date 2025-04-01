@@ -14,4 +14,6 @@ router.post("/revoke-access", (req: Request, res: Response) => medicalCardContro
 router.post("/add-medical-record", (req: Request, res: Response) => medicalCardController.addMedicalRecordTx(req, res));
 router.post("/get-medical-records", (req: Request, res: Response) => medicalCardController.getMedicalRecordsTx(req, res));
 
+router.post("/check-access", (req: Request, res: Response) => medicalCardController.checkAccessTx(req, res));
+
 export default router;

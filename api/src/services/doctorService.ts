@@ -30,8 +30,4 @@ export class DoctorService {
         await clinic.save();
         return true;
     }
-
-    public async getDoctor(userId: string): Promise<IDoctor | null> {
-        return await Doctor.findOne({ _id: userId });
-    }
 }

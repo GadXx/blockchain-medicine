@@ -9,7 +9,7 @@ dotenv.config();
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const factoryABI = [
   "function deployMedicalCard(string memory ownerDID) external returns (address)",
-  "function deployClinic() external returns (address)",
+  "function deployClinic(address clinicOwner) external returns (address)",
   "function addClinicDeployer(address deployer) external",
   "function removeClinicDeployer(address deployer) external",
   "function deployedMedicalCards(address) external view returns (address)",
@@ -54,8 +54,8 @@ export class FactoryService {
     return tx;
   }
 
-  public async createDeployClinicTx(clinicID: string) {
-    const clinic = await Clinic.findOne({ _id: clinicID });
+  public async createDeployClinicTx(userID: string) {
+    const clinic = await Clinic.findOne({ _id: userID });
     if(!clinic) {
       throw new Error('Clinic not found');
     }
@@ -70,7 +70,7 @@ export class FactoryService {
     }
 
     const iface = new ethers.Interface(factoryABI);
-    const data = iface.encodeFunctionData("deployClinic");
+    const data = iface.encodeFunctionData("deployClinic", [clinic.address]);
 
     const tx = {
       to: process.env.FACTORY_CONTRACT_ADDRESS,
@@ -84,7 +84,7 @@ export class FactoryService {
       nonce: await provider.getTransactionCount(clinic.address, "latest")
     };
 
-    await redis.set(`tx:${clinicID}`, JSON.stringify(tx), "EX", 3600);
+    await redis.set(`tx:${userID}`, JSON.stringify(tx), "EX", 3600);
     
     return tx;
   }
@@ -158,7 +158,7 @@ export class FactoryService {
     return await factoryContract.deployedClinics(userAddress);
   }
 
-  public async saveContractAddress(userID: string): Promise<void> {
+  public async saveContractAddressPatient(userID: string): Promise<void> {
 
     const didDocument = await this.didService.getDIDDocument(userID);
     if (!didDocument) {
@@ -176,8 +176,8 @@ export class FactoryService {
     return contractAddress;
   }
 
-  public async saveContractAddressClinic(clinicID: string): Promise<void> {
-    const clinic = await Clinic.findOne({ _id: clinicID });
+  public async saveContractAddressClinic(userID: string): Promise<void> {
+    const clinic = await Clinic.findOne({ _id: userID });
     if(!clinic) {
       throw new Error('Clinic not found');
     }

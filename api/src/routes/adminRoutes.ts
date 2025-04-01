@@ -9,8 +9,4 @@ router.post('/login', (req, res) => adminController.loginAdmin(req, res));
 
 router.use(authMiddleware);
 
-router.get('/get-all-users', (req, res) => adminController.getAllUsers(req, res));
-router.get('/get-all-clinics', (req, res) => adminController.getAllClinics(req, res));
-router.get('/get-all-doctors', (req, res) => adminController.getAllDoctors(req, res));
-
 export default router;
