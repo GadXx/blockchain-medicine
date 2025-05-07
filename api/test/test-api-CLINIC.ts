@@ -126,7 +126,6 @@ const testAPI = async () => {
     response = await axios.get(`${API_URL}/did/get-did-document`);
     console.log("✅ DID document received:", response.data);
 
-
     let message = "Access Medical Records";
     let signature = await UserWallet.signMessage(message);
 
@@ -247,27 +246,6 @@ const testAPI = async () => {
     // Set Authorization header for subsequent requests
     axios.defaults.headers.common["Authorization"] = `Bearer ${tokenDoctor}`;
 
-    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-
-    const iface = new ethers.Interface(["function owner() external view returns (address)"]);
-    const data = iface.encodeFunctionData("owner", []);
-    
-    const ownerResult = await provider.call({
-      to: ClinicContractAddress,
-      data,
-    });
-    
-    const contractOwner = iface.decodeFunctionResult("owner", ownerResult)[0];
-    const signingWallet = await ClinicWallet.getAddress();
-    
-    console.log("🔍 Владелец контракта:", contractOwner);
-    console.log("🔍 Адрес, который подписывает транзакцию:", signingWallet);
-    
-    if (contractOwner.toLowerCase() !== signingWallet.toLowerCase()) {
-      throw new Error("🚨 Ошибка: этот аккаунт не владеет контрактом!");
-    }
-
-
     // Register Wallet
     console.log("⏳ Registering wallet...");
     response = await axios.post<any>(`${API_URL}/doctor/register-wallet`, {
@@ -315,15 +293,6 @@ const testAPI = async () => {
         signedTx
     });
     console.log("✅ Signed transaction sent:", response.data);
-    
-    // Check Access
-    console.log("⏳ Checking access...");
-    response = await axios.post(`${API_URL}/medical-card/check-access`, {
-        clinicAddress: ClinicWallet.address,
-        clinicContractAddress: ClinicContractAddress,
-        doctorAddress: DoctorWallet.address
-    });
-    console.log("✅ Access checked:", response.data);
     
     axios.defaults.headers.common["Authorization"] = `Bearer ${tokenDoctor}`;
 

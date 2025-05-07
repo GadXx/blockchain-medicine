@@ -7,17 +7,12 @@ contract DIDRegistry is IDIDRegistry {
     mapping(string => address) private didToAddress;
     mapping(address => string) private addressToDid;
 
-    event DIDRegistered(string indexed did, address indexed owner);
-    event DIDUpdated(string indexed did, address indexed newOwner);
-
     function registerDID(string memory did) external {
         require(didToAddress[did] == address(0), "DID already registered");
         require(bytes(did).length > 0, "Invalid DID");
 
         didToAddress[did] = msg.sender;
         addressToDid[msg.sender] = did;
-
-        emit DIDRegistered(did, msg.sender);
     }
 
     function updateDID(string memory did, address newOwner) external {
@@ -26,8 +21,6 @@ contract DIDRegistry is IDIDRegistry {
 
         didToAddress[did] = newOwner;
         addressToDid[newOwner] = did;
-
-        emit DIDUpdated(did, newOwner);
     }
 
     function resolveDID(string memory _did) external view returns (address) {

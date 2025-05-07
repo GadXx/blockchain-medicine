@@ -26,7 +26,6 @@ export { Clinic, IClinic };
 interface IDoctor extends Document {
   login: string;
   password: string;
-  did?: string;
   address?: string,
   publicKey?: string
   _id: string;
@@ -35,7 +34,6 @@ interface IDoctor extends Document {
 const doctorSchema = new Schema<IDoctor>({
   login: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  did: { type: String, required: false },
   address: { type: String, required: false },
   publicKey: { type: String, required: false }
 });

@@ -18,15 +18,6 @@ export class MedicalCardController {
         }
     }
 
-    public async checkAccessTx(req: Request, res: Response) {
-        try {
-            await this.medicalCardService.checkAccessTx(req.userId!, req.body.clinicAddress, req.body.clinicContractAddress, req.body.doctorAddress);
-            res.json({ success: true });
-        } catch (error: any) {
-            res.status(500).json({ success: false, message: error.message });
-        }
-    }
-
     @isVerifiedPatient
     public async revokeAccessTx(req: Request, res: Response) {
         try {
@@ -46,12 +37,11 @@ export class MedicalCardController {
             res.status(500).json({ success: false, message: error.message });
         }
     }
-
     
-    public async getMedicalRecordsTx(req: Request, res: Response) {
+    public async getMedicalRecords(req: Request, res: Response) {
         try {
             const { userId, signature } = req.body;
-            const result = await this.medicalCardService.getMedicalRecordsTx(userId, signature);
+            const result = await this.medicalCardService.getMedicalRecords(userId, signature);
             res.json({ result });
         } catch (error: any) {
             res.status(500).json({ success: false, message: error.message });

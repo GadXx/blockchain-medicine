@@ -12,8 +12,6 @@ const medicalCardController = new MedicalCardController();
 router.post("/grant-access", (req: Request, res: Response) => medicalCardController.grantAccessTx(req, res));
 router.post("/revoke-access", (req: Request, res: Response) => medicalCardController.revokeAccessTx(req, res));
 router.post("/add-medical-record", (req: Request, res: Response) => medicalCardController.addMedicalRecordTx(req, res));
-router.post("/get-medical-records", (req: Request, res: Response) => medicalCardController.getMedicalRecordsTx(req, res));
-
-router.post("/check-access", (req: Request, res: Response) => medicalCardController.checkAccessTx(req, res));
+router.post("/get-medical-records", (req: Request, res: Response) => medicalCardController.getMedicalRecords(req, res));
 
 export default router;

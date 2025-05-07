@@ -88,4 +88,14 @@ contract MedicalCard {
         }
         return false;
     }
+
+    function checkAccess(address verifiedAddress) external view returns (bool) {
+        if (didRegistry.resolveDID(ownerDID) == verifiedAddress) {
+            return true;
+        }
+        if (isDoctorAuthorized()) {
+            return true;
+        }
+        return false;
+    }
 }

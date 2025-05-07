@@ -5,8 +5,8 @@ import "./IDIDRegistry.sol";
 import "./IClinic.sol";
 
 contract Clinic is IClinic {
-    address public owner;
-    IDIDRegistry public didRegistry;
+    address private owner;
+    IDIDRegistry private didRegistry;
     mapping(address => bool) private doctors;
 
     modifier onlyOwner() {
