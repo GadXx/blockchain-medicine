@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { User, IUser } from "../models/User";
+import { User } from "../models/User";
 import { Clinic, Doctor } from "../models/Clinic";
 
 export function isAdmin(target: any, key: string, descriptor: PropertyDescriptor) {

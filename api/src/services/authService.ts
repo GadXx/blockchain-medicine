@@ -2,16 +2,17 @@ import { hash, compare } from 'bcrypt';
 import { User, IUser } from '../models/User';
 import { generateToken } from '../utils/jwt';
 
-export class AuthService {
+export class UserService {
 
-  public async registerUser(email: string, phone: string, password: string): Promise<IUser> {
+  public async register(email: string, phone: string, password: string): Promise<IUser> {
     const hashedPassword = await hash(password, 10);
     const user = new User({ email, phone, password: hashedPassword });
+    console.log(`Registering user with email: ${email} and phone: ${phone}`);
     await user.save();
     return user;
   }
 
-  public async loginUser(identifier: string, password: string): Promise<{ token: string }> {
+  public async login(identifier: string, password: string): Promise<{ token: string }> {
     const user = await User.findOne({ $or: [{ email: identifier }, { phone: identifier }] }) as IUser | null;
     if (!user) throw new Error('User not found');
 
@@ -20,6 +21,18 @@ export class AuthService {
 
     const token = generateToken(user._id.toString());
     return { token: token };
+  }
+
+  public async getMe(userID: string): Promise<IUser> {
+    const user = await User.findById(userID) as IUser;
+    if (!user) throw new Error('User not found');
+    return user;
+  }
+
+  public async getUserByID(userID: string): Promise<IUser> {
+    const user = await User.findById(userID) as IUser;
+    if (!user) throw new Error('User not found');
+    return user;
   }
 
   public async verifycationUser(userID: string): Promise<IUser> {
@@ -31,9 +44,6 @@ export class AuthService {
     return user;
   }
   
-  public async getAllUsers(): Promise<IUser[]> {
-    return await User.find();
-  }
 }
 
-export default new AuthService();
+export default new UserService();

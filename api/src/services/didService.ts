@@ -4,6 +4,7 @@ import { User, IUser } from '../models/User';
 import { ethers } from "ethers";
 import { redis } from "../config/Redis";
 import dotenv from "dotenv";
+import { log } from "console";
 
 dotenv.config();
 
@@ -59,10 +60,12 @@ export class DidService {
 
 
     public async registerDIDinBlockchainTx(userID: string, DID: string, walletAddress: string) {
-
+        console.log(`Registering DID ${DID} for user ${userID} at address ${walletAddress}`);
+        
         const iface = new ethers.Interface(DIDRegistryABI);
         const data = iface.encodeFunctionData("registerDID", [DID]);
-
+        console.log(`Encoded data for transaction: ${data}`);
+        
         const tx = {
             to: process.env.DID_REGISTRY_ADDRESS,
             data,

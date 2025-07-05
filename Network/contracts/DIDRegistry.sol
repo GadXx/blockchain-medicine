@@ -27,7 +27,6 @@ contract DIDRegistry is IDIDRegistry {
         return didToAddress[_did];
     }
 
-
     function resolveAddress(address _address) external view returns (string memory) {
         return addressToDid[_address];
     }

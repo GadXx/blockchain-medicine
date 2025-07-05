@@ -9,7 +9,7 @@ export class DidController {
         this.didService = new DidService();
     }
 
-    @isVerifiedPatient
+    // @isVerifiedPatient
     public async registerDID(req: Request, res: Response): Promise<void> {
         try {
             const { walletAddress, walletPublicKey } = req.body;
@@ -31,12 +31,14 @@ export class DidController {
         }
     }
 
-    @isVerifiedPatient
+    // @isVerifiedPatient
     public async registerDIDinBlockchainTx(req: Request, res: Response): Promise<void> {
         try {
             const { DID, walletAddress } = req.body;
+            console.log(`Registering DID in blockchain: ${DID} for user: ${req.userId} with wallet address: ${walletAddress}`);
+            
             const tx = await this.didService.registerDIDinBlockchainTx(req.userId!, DID, walletAddress);
-            res.json({ unsignedTransaction: tx });
+            res.status(200).json({ unsignedTransaction: tx });
         } catch (error: any) {
             res.status(500).json({ success: false, message: error.message });
         }

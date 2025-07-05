@@ -12,8 +12,21 @@ besu \
   --rpc-http-cors-origins="all" \
   --min-gas-price=0 \
   --p2p-port=30303 \
-  --rpc-http-port=8545 \
-  --data-storage-format=BONSAI
+  --data-storage-format=BONSAI \
+  --max-peers=100 \
+  --rpc-http-max-active-connections=1000 \
+  --rpc-http-max-batch-size=1000 \
+  --rpc-http-max-request-content-length=104857600 \
+  --tx-pool-layer-max-capacity=100000000 \
+  --tx-pool-max-future-by-sender=1000 \
+  --tx-pool-max-prioritized=10000 \
+  --bonsai-trie-logs-pruning-window-size=20000 \
+  --bonsai-historical-block-limit=2048 \
+  --target-gas-limit=100000000 \
+  --metrics-enabled \
+  --metrics-host=0.0.0.0 \
+  --metrics-port=9546 \
+  --metrics-categories=blockchain,transaction_pool,network,rpc
 
 besu \
   --data-path=Node-2/data \
@@ -26,7 +39,21 @@ besu \
   --p2p-port=30304 \
   --rpc-http-port=8546 \
   --data-storage-format=BONSAI \
-  --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303
+  --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303 \
+  --max-peers=100 \
+  --rpc-http-max-active-connections=1000 \
+  --rpc-http-max-batch-size=1000 \
+  --rpc-http-max-request-content-length=104857600 \
+  --tx-pool-layer-max-capacity=100000000 \
+  --tx-pool-max-future-by-sender=1000 \
+  --tx-pool-max-prioritized=10000 \
+  --bonsai-trie-logs-pruning-window-size=20000 \
+  --bonsai-historical-block-limit=2048 \
+  --target-gas-limit=100000000 \
+  --metrics-enabled \
+  --metrics-host=0.0.0.0 \
+  --metrics-port=9547 \
+  --metrics-categories=blockchain,transaction_pool,network,rpc
 
 besu \
   --data-path=Node-3/data \
@@ -39,8 +66,21 @@ besu \
   --p2p-port=30305 \
   --rpc-http-port=8547 \
   --data-storage-format=BONSAI \
-  --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303
-
+  --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303 \
+  --max-peers=100 \
+  --rpc-http-max-active-connections=1000 \
+  --rpc-http-max-batch-size=1000 \
+  --rpc-http-max-request-content-length=104857600 \
+  --tx-pool-layer-max-capacity=100000000 \
+  --tx-pool-max-future-by-sender=1000 \
+  --tx-pool-max-prioritized=10000 \
+  --bonsai-trie-logs-pruning-window-size=20000 \
+  --bonsai-historical-block-limit=2048 \
+  --target-gas-limit=100000000 \
+  --metrics-enabled \
+  --metrics-host=0.0.0.0 \
+  --metrics-port=9548 \
+  --metrics-categories=blockchain,transaction_pool,network,rpc
   
 besu \
   --data-path=Node-4/data \
@@ -53,7 +93,21 @@ besu \
   --p2p-port=30306 \
   --rpc-http-port=8548 \
   --data-storage-format=BONSAI \
-  --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303
+  --bootnodes=enode://a58c1d1ce146a16404dfc6c1b5f3499f4e08d10a5705001d9dcfc6c46e93932dd93a69811bd58a7cd85cb9b6b5064a1e9e331d44aa879b8aa432b9e85622221f@127.0.0.1:30303 \
+  --max-peers=100 \
+  --rpc-http-max-active-connections=1000 \
+  --rpc-http-max-batch-size=1000 \
+  --rpc-http-max-request-content-length=104857600 \
+  --tx-pool-layer-max-capacity=100000000 \
+  --tx-pool-max-future-by-sender=1000 \
+  --tx-pool-max-prioritized=10000 \
+  --bonsai-trie-logs-pruning-window-size=20000 \
+  --bonsai-historical-block-limit=2048 \
+  --target-gas-limit=100000000 \
+  --metrics-enabled \
+  --metrics-host=0.0.0.0 \
+  --metrics-port=9549 \
+  --metrics-categories=blockchain,transaction_pool,network,rpc
 
 docker run --name mongodb -d -p 27017:27017 mongo
 docker run -d --name redis -p 6379:6379 redis:latest

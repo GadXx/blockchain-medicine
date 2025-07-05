@@ -9,6 +9,6 @@ router.use(authMiddleware);
 
 const transactionController = new TransactionController();
 
-router.post("/send-signed-transaction", (req: Request, res: Response) => transactionController.sendSignedTransaction(req, res));
+router.post("/send", (req: Request, res: Response) => transactionController.sendSignedTransaction(req, res));
 
 export default router;

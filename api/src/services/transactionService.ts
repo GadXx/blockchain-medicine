@@ -24,13 +24,8 @@ export class TransactionService {
 
         try {
             const txHash = await provider.send("eth_sendRawTransaction", [signedTx]);
-            console.log("✅ Transaction sent! Hash:", txHash);
-
             const receipt = await <any>provider.waitForTransaction(txHash);
-            console.log("🔍 Transaction receipt:", receipt);
-
             if (receipt.status !== 1) {
-                console.log("❌ Transaction failed!");
                 throw new Error("Transaction execution failed");
             }
 
