@@ -1,91 +1,91 @@
 # Blockchain Medicine
 
-A prototype for managing medical-record access with a permissioned blockchain. It combines an Express/TypeScript API, MongoDB-backed user accounts, Ethereum-compatible Solidity contracts, and IPFS references for medical files.
+Учебный прототип системы управления доступом к медицинским записям на блокчейне. Проект объединяет API на Express и TypeScript, MongoDB для учётных записей, Solidity-контракты и IPFS для хранения файлов и ссылок на них.
 
-> **Status: educational prototype.** This repository is not suitable for real patient data or clinical use. It has not been independently security-audited. Blockchain data is visible to network participants, and storing a file hash or identifier on-chain can still expose sensitive metadata.
+> **Статус: учебный прототип.** Проект не предназначен для реальных медицинских данных или клинического применения и не проходил независимый аудит безопасности. Данные в блокчейне доступны участникам сети. Даже хеш или идентификатор файла может раскрыть чувствительные метаданные.
 
-## What it does
+## Что делает проект
 
-- Registers users and issues JWTs for API authentication.
-- Associates user identities (DIDs) with wallet addresses through a Solidity registry.
-- Lets users deploy a medical-card contract and grant or revoke clinic access.
-- Lets registered clinic doctors add IPFS references to a patient's medical card.
-- Stores account and DID document data in MongoDB; the blockchain stores identity mappings, access rules, and record references.
+- Регистрирует пользователей и выдаёт JWT для аутентификации в API.
+- Связывает DID пользователя с адресом его кошелька через Solidity-контракт.
+- Позволяет создать контракт медицинской карты и выдать клинике доступ к ней или отозвать его.
+- Позволяет зарегистрированным врачам клиники добавлять в карту ссылки на записи в IPFS.
+- Хранит учётные записи и документы DID в MongoDB, а связи идентификаторов, правила доступа и ссылки на записи — в блокчейне.
 
-Medical files themselves are not stored in the Solidity contracts. The contracts store an IPFS reference and timestamp. The API includes routes for user authentication, DID operations, contract deployment, transactions, and medical-card access.
+Сами медицинские файлы в Solidity-контрактах не хранятся. В контракт записываются ссылка IPFS и временная метка. API предоставляет маршруты для аутентификации, операций с DID, развёртывания контрактов, транзакций и работы с медицинской картой.
 
-## Architecture
-
-```text
-Client
-  └── Express API (TypeScript, port 3000)
-       ├── MongoDB: users and DID documents
-       ├── EVM-compatible JSON-RPC node (Besu IBFT network or local dev node)
-       └── Solidity contracts
-            ├── DIDRegistry: DID ↔ wallet lookup
-            ├── ContractFactory: deploys personal cards and clinics
-            ├── Clinic: doctor allow-list
-            └── MedicalCard: clinic permissions and IPFS record references
-```
-
-The `Network/` folder contains the Solidity contracts, Hardhat deployment setup, and Besu network configuration. The API signs transactions using the mnemonic/wallet flows in `api/src/`.
-
-## Repository layout
+## Архитектура
 
 ```text
-api/                 Express API, TypeScript services and routes
-Network/contracts/   Solidity contracts
-Network/scripts/     Hardhat deployment script
-Network/             Hardhat and Besu network configuration
-db/                  Local database container configuration
+Клиент
+  └── API на Express и TypeScript (порт 3000)
+       ├── MongoDB: пользователи и документы DID
+       ├── EVM-совместимая JSON-RPC-нода (Besu IBFT или локальная нода)
+       └── Solidity-контракты
+            ├── DIDRegistry: поиск адреса кошелька по DID и наоборот
+            ├── ContractFactory: создание личных карт и клиник
+            ├── Clinic: список допущенных врачей
+            └── MedicalCard: права клиник и ссылки на медицинские записи в IPFS
 ```
 
-## Requirements
+Каталог `Network/` содержит Solidity-контракты, настройки Hardhat для развёртывания и конфигурацию сети Besu. API формирует и подписывает транзакции, используя кошельки и мнемонические фразы; соответствующий код находится в `api/src/`.
 
-- Node.js 18 or newer
+## Структура репозитория
+
+```text
+api/                 API, сервисы и маршруты на TypeScript
+Network/contracts/   Solidity-контракты
+Network/scripts/     скрипты развёртывания Hardhat
+Network/             настройки Hardhat и Besu
+db/                  конфигурация локальных контейнеров MongoDB и Redis
+```
+
+## Требования
+
+- Node.js 18 или новее
 - MongoDB
-- An EVM-compatible JSON-RPC endpoint
-- (Optional) Besu and Docker, if you want to run the included permissioned network
-- (Optional) IPFS/Kubo, if you want to store medical files and use their references
+- Доступная EVM-совместимая JSON-RPC-нода
+- (Необязательно) Besu и Docker для запуска собственной сети
+- (Необязательно) IPFS/Kubo для хранения файлов и получения ссылок на них
 
-## Local API setup
+## Локальный запуск API
 
-1. Install API dependencies:
+1. Установите зависимости API:
 
    ```bash
    cd api
    npm ci
    ```
 
-2. Start local MongoDB and Redis from the repository root:
+2. В корне репозитория запустите MongoDB и Redis:
 
    ```bash
    docker compose -f db/docker-compose.yaml up -d
    ```
 
-3. Copy `api/.env.example` to `api/.env` and set values for your local MongoDB, JWT signing secret, JSON-RPC endpoint, and deployed contract addresses.
-4. Make sure the JSON-RPC endpoint is reachable.
-5. Start the API:
+3. Скопируйте `api/.env.example` в `api/.env` и укажите параметры MongoDB, секрет для подписи JWT, адрес JSON-RPC-ноды и адреса развёрнутых контрактов.
+4. Убедитесь, что JSON-RPC-нода доступна.
+5. Запустите API:
 
    ```bash
    npm start
    ```
 
-The API listens on port `3000` by default; set `PORT` to change it. Routes are grouped under `/auth`, `/did`, `/factory`, `/medical-card`, and `/transaction`. Protected routes require a bearer token returned by `/auth/login`.
+По умолчанию API слушает порт `3000`; его можно изменить переменной `PORT`. Маршруты сгруппированы по префиксам `/auth`, `/did`, `/factory`, `/medical-card` и `/transaction`. Для защищённых маршрутов требуется bearer-токен, возвращаемый методом `/auth/login`.
 
-### API routes
+### Основные маршруты API
 
-| Group | Routes |
+| Группа | Назначение |
 | --- | --- |
-| `/auth` | `POST /register`, `POST /login`, authenticated `PUT /verify` |
-| `/did` | Authenticated DID document registration, lookup, and blockchain registration |
-| `/factory` | Authenticated medical-card/clinic deployment and clinic-deployer management |
-| `/medical-card` | Authenticated clinic access changes and medical-record operations |
-| `/transaction` | Authenticated submission of a previously prepared signed transaction |
+| `/auth` | Регистрация, вход и подтверждение пользователя |
+| `/did` | Регистрация и получение документа DID, регистрация DID в блокчейне |
+| `/factory` | Развёртывание медицинских карт и клиник, управление правами развёртывания клиник |
+| `/medical-card` | Выдача и отзыв доступа клиникам, операции с медицинскими записями |
+| `/transaction` | Отправка ранее подготовленной подписанной транзакции |
 
-## Smart contracts
+## Смарт-контракты
 
-Install dependencies and compile from `Network/`:
+Установите зависимости и скомпилируйте контракты из каталога `Network/`:
 
 ```bash
 cd Network
@@ -93,26 +93,26 @@ npm ci
 npx hardhat compile
 ```
 
-To deploy `ContractFactory` to the configured custom network, first set `RPC_URL`, `DEPLOYER_PRIVATE_KEY`, and `DID_REGISTRY_ADDRESS` in your shell or a local ignored `.env` file, then run:
+Чтобы развернуть `ContractFactory` в настроенной сети, задайте `RPC_URL`, `DEPLOYER_PRIVATE_KEY` и `DID_REGISTRY_ADDRESS` в переменных окружения или в локальном игнорируемом `.env`, затем выполните:
 
 ```bash
 npx hardhat run scripts/deploy.js --network customNetwork
 ```
 
-The deployment script expects an already deployed DID registry. Never use a wallet with real funds or a key reused outside a disposable development network.
+Перед этим в сети уже должен быть развёрнут `DIDRegistry`. Используйте только отдельный кошелёк для разработки в тестовой сети. Не используйте кошельки с реальными средствами или ключи, применяемые где-либо ещё.
 
-## Configuration
+## Конфигурация
 
-The API configuration template is in `api/.env.example`. Hardhat reads its RPC endpoint and deployer key from the environment. Do not commit `.env` files, private keys, mnemonics, node key files, or production credentials.
+Шаблон настроек API находится в `api/.env.example`. Hardhat получает адрес JSON-RPC-ноды и ключ развёртывания из переменных окружения. Не добавляйте в Git файлы `.env`, приватные ключи, мнемонические фразы, ключи нод и учётные данные.
 
-## Current limitations
+## Ограничения
 
-- This is an early prototype; the included test scripts are exploratory scripts, not a maintained automated test suite.
-- The API, Besu network, IPFS node, and contract deployment have not been verified as a reproducible end-to-end setup.
-- The permission model and transaction-signing flow need a security review before any real deployment.
-- On-chain references and events are not confidential. Do not use identifiable or sensitive patient information on a public or shared chain.
-- No production deployment, backup, migration, or recovery process is provided.
+- Это ранний прототип. Сценарии в `api/test/` — исследовательские скрипты, а не поддерживаемый автоматизированный набор тестов.
+- Сквозной запуск API, сети Besu, IPFS и развёртывания контрактов не проверен как воспроизводимый процесс.
+- Модель доступа и подписание транзакций требуют аудита безопасности до любого реального развёртывания.
+- Ссылки и события блокчейна не являются конфиденциальными. Не записывайте идентифицирующую или чувствительную медицинскую информацию в публичную или общую сеть.
+- В проекте не предусмотрены процессы производственного развёртывания, резервного копирования, миграции и восстановления.
 
-## License
+## Лицензия
 
-No license has been specified yet. All rights reserved unless the repository owner adds a license.
+Лицензия пока не указана. До добавления лицензии право на использование кода не предоставляется.
