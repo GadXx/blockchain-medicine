@@ -1,12 +1,15 @@
 require("@nomiclabs/hardhat-ethers");
+require("dotenv").config();
+
+const privateKey = process.env.DEPLOYER_PRIVATE_KEY;
 
 module.exports = {
   networks: {
     customNetwork: {
-      url: "http://127.0.0.1:8545",  // RPC-адрес твоей сети
-      accounts: ["0x3ddfdd2c63afe9bf902a74d74645e3500a6513539371d39da60699206a0417ae"],    // Приватный ключ аккаунта для деплоя
-      gasPrice: 0
+      url: process.env.RPC_URL || "http://127.0.0.1:8545",
+      ...(privateKey ? { accounts: [privateKey] } : {}),
+      gasPrice: 0,
     },
   },
-  solidity: "0.8.17",  // Версия Solidity для компиляции контракта
+  solidity: "0.8.17",
 };

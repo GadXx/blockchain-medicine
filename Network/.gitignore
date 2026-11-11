@@ -1,8 +1,9 @@
-node_modules
-cache
-artifacts
-.states
-Node-1
-Node-2
-Node-3
-Node-3
+node_modules/
+cache/
+artifacts/
+.states/
+Node-*/
+*.log
+.env
+.env.*
+!.env.example

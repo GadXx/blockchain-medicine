@@ -1,19 +1,20 @@
+require("dotenv").config();
 const { ethers } = require("hardhat");
 
 async function main() {
-  // Получение фабрики контракта
-  const ContractFactory = await ethers.getContractFactory("ContractFactory");
+  const didRegistryAddress = process.env.DID_REGISTRY_ADDRESS;
+  if (!didRegistryAddress) {
+    throw new Error("Set DID_REGISTRY_ADDRESS before deploying ContractFactory");
+  }
 
-  // Деплой контракта
-  const contract = await ContractFactory.deploy("0x00d2bC965Fe2847b2af611F7595caD24A1255533");
-
+  const contractFactory = await ethers.getContractFactory("ContractFactory");
+  const contract = await contractFactory.deploy(didRegistryAddress);
   await contract.deployed();
-  console.log("Deployed to:", contract.address);
+
+  console.log(`ContractFactory deployed to: ${contract.address}`);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
